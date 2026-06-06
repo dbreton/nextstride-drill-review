@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NextStride — Drill Review</title>
+<style>
+ :root{color-scheme:dark}*{box-sizing:border-box}
+ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#0b0e12;color:#e9eef3}
+ header{padding:30px 20px 4px;text-align:center}header h1{margin:0;font-size:23px}header p{margin:6px 0 0;color:#8aa0b2;font-size:14px}
+ .grid{display:grid;gap:22px;padding:24px;max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+ .card{margin:0;background:#11161c;border:1px solid #1d2630;border-radius:14px;overflow:hidden}
+ .card video{width:100%;display:block;background:#000;aspect-ratio:2/3;object-fit:cover}
+ figcaption{padding:12px 14px 16px}
+ .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+ .title{font-size:16px;font-weight:600;color:#dfeaf2}
+ .badge{font-size:11px;padding:3px 8px;border-radius:999px;background:#2a3540;color:#9fb3c4}
+ .badge.approved{background:#16361f;color:#5fe08a}.badge.rework{background:#3a2a12;color:#f0b65a}
+ .btns{display:flex;gap:8px;margin:12px 0 8px}
+ .btns button{flex:1;padding:9px;border-radius:9px;border:1px solid #2a3540;background:#172029;color:#cfe0ec;font-weight:600;cursor:pointer}
+ .btns .ap.on{background:#16361f;border-color:#2e7d46;color:#7af0a0}
+ .btns .rw.on{background:#3a2a12;border-color:#a9772a;color:#ffcf80}
+ textarea{width:100%;min-height:64px;margin-top:4px;background:#0d1217;border:1px solid #243039;border-radius:9px;color:#e9eef3;padding:9px;font:inherit;resize:vertical}
+ .save{margin-top:10px;width:100%;padding:10px;border-radius:9px;border:0;background:#2563a8;color:#fff;font-weight:600;cursor:pointer}
+ .saved{display:inline-block;margin-top:8px;color:#5fe08a;font-size:13px;min-height:16px}
+ .loading{text-align:center;color:#8aa0b2;padding:40px}
+ footer{text-align:center;color:#62768a;font-size:12px;padding:8px 20px 40px}
+</style>
+</head>
+<body>
+<header><h1>NextStride · Drill Review</h1><p id="sub">Loading drills…</p></header>
+<main id="grid" class="grid"></main>
+<footer>Internal review · your responses are saved automatically</footer>
+<script>
+const FN = "https://xgpbnwguwtaeocsatqip.supabase.co/functions/v1/drills";
+const esc = (s) => (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const badgeText = (s) => s==="approved" ? "Approved" : s==="rework" ? "Needs rework" : "Pending";
+
+async function load() {
+  const grid = document.getElementById("grid");
+  try {
+    const res = await fetch(FN + "?list=1");
+    const { videos } = await res.json();
+    document.getElementById("sub").textContent =
+      "Review each drill — Approve or Rework, add comments, then Save. " + videos.length + " drills.";
+    grid.innerHTML = videos.map(v => `
+      <figure class="card" data-file="${esc(v.file)}" data-status="${v.status==="pending"?"":v.status}">
+        <video controls preload="metadata" playsinline src="${v.url}"></video>
+        <figcaption>
+          <div class="row"><span class="title">${esc(v.title)}</span>
+            <span class="badge ${v.status}">${badgeText(v.status)}</span></div>
+          <div class="btns">
+            <button class="ap" onclick="pick(this,'approved')">✓ Approve</button>
+            <button class="rw" onclick="pick(this,'rework')">↻ Rework</button>
+          </div>
+          <textarea placeholder="Comments for this drill (optional)">${esc(v.comment)}</textarea>
+          <button class="save" onclick="save(this)">Save review</button>
+          <span class="saved"></span>
+        </figcaption>
+      </figure>`).join("");
+    document.querySelectorAll(".card").forEach(c => {
+      const st = c.dataset.status;
+      if (st) c.querySelector(st==="approved"?".ap":".rw").classList.add("on");
+    });
+  } catch (e) {
+    grid.innerHTML = '<p class="loading">Could not load drills. Please refresh.</p>';
+  }
+}
+function pick(btn, status) {
+  const c = btn.closest(".card"); c.dataset.status = status;
+  c.querySelectorAll(".btns button").forEach(b => b.classList.remove("on")); btn.classList.add("on");
+}
+async function save(btn) {
+  const c = btn.closest(".card"); const status = c.dataset.status;
+  if (!status) { alert("Tap Approve or Rework first."); return; }
+  const file = c.getAttribute("data-file");
+  const comment = c.querySelector("textarea").value;
+  const s = c.querySelector(".saved"); s.textContent = "Saving…";
+  try {
+    const r = await fetch(FN, { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ file, status, comment }) });
+    if (!r.ok) throw 0;
+    const badge = c.querySelector(".badge");
+    badge.className = "badge " + status; badge.textContent = badgeText(status);
+    s.textContent = "Saved ✓"; setTimeout(() => { s.textContent = ""; }, 2500);
+  } catch (e) { s.textContent = "Save failed — try again"; }
+}
+load();
+</script>
+</body>
+</html>

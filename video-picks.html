@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NextStride — Off-Ice Demo Video Picks</title>
+<style>
+ :root{color-scheme:dark}*{box-sizing:border-box}
+ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#0b0e12;color:#e9eef3}
+ header{padding:30px 20px 4px;text-align:center}header h1{margin:0;font-size:23px}header p{margin:6px 0 0;color:#8aa0b2;font-size:14px;max-width:640px;margin-left:auto;margin-right:auto}
+ header a{color:#7cc4e8}
+ .grid{display:grid;gap:22px;padding:24px;max-width:1100px;margin:0 auto;grid-template-columns:repeat(auto-fill,minmax(440px,1fr))}
+ @media (max-width:520px){.grid{grid-template-columns:1fr}}
+ .card{margin:0;background:#11161c;border:1px solid #1d2630;border-radius:14px;padding:16px}
+ .title{font-size:17px;font-weight:600;color:#dfeaf2}
+ .cue{margin:4px 0 12px;color:#8aa0b2;font-size:13px}
+ .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+ .badge{font-size:11px;padding:3px 8px;border-radius:999px;background:#2a3540;color:#9fb3c4;white-space:nowrap}
+ .badge.approved{background:#16361f;color:#5fe08a}.badge.rework{background:#3a2a12;color:#f0b65a}
+ .cand{border:1px solid #1d2630;border-radius:11px;overflow:hidden;margin-bottom:12px;transition:border-color .15s}
+ .cand.on{border-color:#2e7d46;box-shadow:0 0 0 1px #2e7d46}
+ .cand iframe{width:100%;aspect-ratio:16/9;display:block;border:0;background:#000}
+ .cand .pickrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px}
+ .cand .label{font-size:13px;color:#cfe0ec}
+ .cand button{padding:7px 12px;border-radius:8px;border:1px solid #2a3540;background:#172029;color:#cfe0ec;font-weight:600;cursor:pointer;white-space:nowrap}
+ .cand.on button{background:#16361f;border-color:#2e7d46;color:#7af0a0}
+ .alts{display:flex;gap:8px;margin:2px 0 10px}
+ .alts button{flex:1;padding:9px;border-radius:9px;border:1px solid #2a3540;background:#172029;color:#9fb3c4;font-weight:600;cursor:pointer;font-size:13px}
+ .alts button.on{background:#3a2a12;border-color:#a9772a;color:#ffcf80}
+ textarea{width:100%;min-height:52px;background:#0d1217;border:1px solid #243039;border-radius:9px;color:#e9eef3;padding:9px;font:inherit;resize:vertical}
+ .save{margin-top:10px;width:100%;padding:10px;border-radius:9px;border:0;background:#2563a8;color:#fff;font-weight:600;cursor:pointer}
+ .saved{display:inline-block;margin-top:8px;color:#5fe08a;font-size:13px;min-height:16px}
+ footer{text-align:center;color:#62768a;font-size:12px;padding:8px 20px 40px}
+</style>
+</head>
+<body>
+<header>
+  <h1>NextStride · Off-Ice Demo Video Picks</h1>
+  <p>Four off-ice drills still have no demo visual. For each one: watch the candidate clips, pick the one athletes should see (or choose "film our own" / "generate"), add a comment if you want, then <b>Save</b>. Picks are recorded automatically. Also see the <a href="index.html">generated-clip review</a>.</p>
+</header>
+<main id="grid" class="grid"></main>
+<footer>Internal review · your responses are saved automatically</footer>
+<script>
+const FN = "https://xgpbnwguwtaeocsatqip.supabase.co/functions/v1/drills";
+const DRILLS = [
+  {
+    slug: "90-90-int-ext-rotations",
+    title: "90/90 Int/Ext Rotations",
+    cue: "Drill prescribes the ACTIVE shin lift-off (lift front shin, hold 4s, then back shin) — not the passive 90/90 stretch.",
+    candidates: [
+      { id: "xUgcAZJ_PDE", label: "FRC 90:90 internal hip rotation lift-off" },
+      { id: "aZ3uDWK_HjA", label: "90/90 hip int/ext rotation mobility" },
+    ],
+  },
+  {
+    slug: "all-4s-fire-hydrants",
+    title: "All-4's Fire Hydrants",
+    cue: "Quadruped, knee bent, lift to the side, 3s hold at the top. Hips stay square.",
+    candidates: [
+      { id: "056vkfWzaPc", label: "Quadruped fire hydrants (short)" },
+      { id: "dzIRHZ1ZaU4", label: "Fire hydrants — Revival Performance PT" },
+    ],
+  },
+  {
+    slug: "eagle-grip-shoulder-dislocates",
+    title: "Eagle-Grip Shoulder Dislocates",
+    cue: "Grip matters: arms CROSSED at the wrists, one hand over / one under. Standard wide-grip dislocates are a different drill.",
+    candidates: [
+      { id: "wwFhD6mb5rw", label: "Shoulder dislocate — eagle grip" },
+      { id: "0twiw3gR_cM", label: "Eagle grip dislocates (short)" },
+    ],
+  },
+  {
+    slug: "ninja-squat-holds",
+    title: "Ninja Squat Holds",
+    cue: "Deep squat HOLD, heels flat, sitting between the heels. Search results were weak — filming our own may be best.",
+    candidates: [
+      { id: "PXNtSjxL0v0", label: "Ankle mobility for a deep squat" },
+    ],
+  },
+];
+const KEY = (slug) => "video-pick:" + slug;
+const esc = (s) => (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function render(reviews) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = DRILLS.map((d) => {
+    const rev = reviews[KEY(d.slug)];
+    const badge = rev ? (rev.status === "approved" ? "approved" : "rework") : "";
+    const badgeText = rev ? (rev.status === "approved" ? "Pick saved" : "No fit — " + (rev.comment.includes("film") ? "filming" : "generate")) : "Pending";
+    return `
+    <figure class="card" data-slug="${d.slug}" data-choice="">
+      <div class="row"><span class="title">${esc(d.title)}</span>
+        <span class="badge ${badge}">${esc(badgeText)}</span></div>
+      <p class="cue">${esc(d.cue)}</p>
+      ${d.candidates.map((c) => `
+      <div class="cand" data-url="https://www.youtube.com/watch?v=${c.id}">
+        <iframe src="https://www.youtube-nocookie.com/embed/${c.id}" title="${esc(c.label)}" allowfullscreen loading="lazy"
+          allow="accelerometer; encrypted-media; picture-in-picture"></iframe>
+        <div class="pickrow"><span class="label">${esc(c.label)}</span>
+          <button onclick="pick(this)">Use this one</button></div>
+      </div>`).join("")}
+      <div class="alts">
+        <button data-alt="film our own clip" onclick="pickAlt(this)">None fit — we'll film it</button>
+        <button data-alt="generate with runway" onclick="pickAlt(this)">None fit — generate it</button>
+      </div>
+      <textarea placeholder="Comments — e.g. clip window to use (mm:ss–mm:ss), or what to film instead">${esc(rev && !rev.comment.startsWith("url=") ? rev.comment : (rev ? rev.comment.split(" | ").slice(1).join(" | ") : ""))}</textarea>
+      <button class="save" onclick="save(this)">Save</button>
+      <span class="saved"></span>
+    </figure>`;
+  }).join("");
+  Object.entries(reviews).forEach(([k, rev]) => {
+    const card = document.querySelector(`.card[data-slug="${k.replace("video-pick:", "")}"]`);
+    if (!card) return;
+    if (rev.status === "approved" && rev.comment.startsWith("url=")) {
+      const url = rev.comment.split(" | ")[0].slice(4);
+      const cand = card.querySelector(`.cand[data-url="${url}"]`);
+      if (cand) { cand.classList.add("on"); card.dataset.choice = url; }
+    } else if (rev.status === "rework") {
+      const alt = [...card.querySelectorAll(".alts button")].find((b) => rev.comment.startsWith(b.dataset.alt));
+      if (alt) { alt.classList.add("on"); card.dataset.choice = "alt:" + alt.dataset.alt; }
+    }
+  });
+}
+function pick(btn) {
+  const card = btn.closest(".card"); const cand = btn.closest(".cand");
+  card.querySelectorAll(".cand").forEach((c) => c.classList.remove("on"));
+  card.querySelectorAll(".alts button").forEach((b) => b.classList.remove("on"));
+  cand.classList.add("on");
+  card.dataset.choice = cand.dataset.url;
+}
+function pickAlt(btn) {
+  const card = btn.closest(".card");
+  card.querySelectorAll(".cand").forEach((c) => c.classList.remove("on"));
+  card.querySelectorAll(".alts button").forEach((b) => b.classList.remove("on"));
+  btn.classList.add("on");
+  card.dataset.choice = "alt:" + btn.dataset.alt;
+}
+async function save(btn) {
+  const card = btn.closest(".card");
+  const choice = card.dataset.choice;
+  if (!choice) { alert("Pick a video, or choose one of the 'None fit' options first."); return; }
+  const note = card.querySelector("textarea").value.trim();
+  const isAlt = choice.startsWith("alt:");
+  const body = {
+    file: KEY(card.dataset.slug),
+    status: isAlt ? "rework" : "approved",
+    comment: isAlt ? (choice.slice(4) + (note ? " | " + note : "")) : ("url=" + choice + (note ? " | " + note : "")),
+  };
+  const s = card.querySelector(".saved"); s.textContent = "Saving…";
+  try {
+    const r = await fetch(FN, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error("save failed");
+    s.textContent = "Saved ✓";
+    const badge = card.querySelector(".badge");
+    badge.className = "badge " + (isAlt ? "rework" : "approved");
+    badge.textContent = isAlt ? "No fit — " + (choice.includes("film") ? "filming" : "generate") : "Pick saved";
+  } catch (e) {
+    s.textContent = "Could not save — try again.";
+  }
+}
+(async function load() {
+  let reviews = {};
+  try { reviews = await (await fetch(FN + "?data=1")).json(); } catch (e) { /* render with no prior state */ }
+  render(reviews || {});
+})();
+</script>
+</body>
+</html>

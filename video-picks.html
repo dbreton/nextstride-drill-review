@@ -31,12 +31,13 @@
  .save{margin-top:10px;width:100%;padding:10px;border-radius:9px;border:0;background:#2563a8;color:#fff;font-weight:600;cursor:pointer}
  .saved{display:inline-block;margin-top:8px;color:#5fe08a;font-size:13px;min-height:16px}
  footer{text-align:center;color:#62768a;font-size:12px;padding:8px 20px 40px}
+ .group{grid-column:1/-1;margin:14px 0 -6px;font-size:15px;font-weight:700;color:#9fb3c4;text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid #1d2630;padding-bottom:8px}
 </style>
 </head>
 <body>
 <header>
   <h1>NextStride · Off-Ice Demo Video Picks</h1>
-  <p>Four off-ice drills still have no demo visual. For each one: watch the candidate clips, pick the one athletes should see (or choose "film our own" / "generate"), add a comment if you want, then <b>Save</b>. Picks are recorded automatically. Also see the <a href="index.html">generated-clip review</a>.</p>
+  <p>These drills have no demo visual yet. For each one: watch the candidate clips, pick the one athletes should see (or choose "film our own" / "generate"), add a comment if you want, then <b>Save</b>. Picks are recorded automatically. Also see the <a href="index.html">generated-clip review</a> — six AI-generated clips there (push-up variant, squat, jumping jacks, burpee, jump, plank) are still waiting for approval too.</p>
 </header>
 <main id="grid" class="grid"></main>
 <footer>Internal review · your responses are saved automatically</footer>
@@ -44,6 +45,7 @@
 const FN = "https://xgpbnwguwtaeocsatqip.supabase.co/functions/v1/drills";
 const DRILLS = [
   {
+    group: "Mobility library (4 drills)",
     slug: "90-90-int-ext-rotations",
     title: "90/90 Int/Ext Rotations",
     cue: "Drill prescribes the ACTIVE shin lift-off (lift front shin, hold 4s, then back shin) — not the passive 90/90 stretch.",
@@ -73,9 +75,93 @@ const DRILLS = [
   {
     slug: "ninja-squat-holds",
     title: "Ninja Squat Holds",
-    cue: "Deep squat HOLD, heels flat, sitting between the heels. Search results were weak — filming our own may be best.",
+    cue: "Deep squat HOLD, heels flat, sitting between the heels, chest up.",
     candidates: [
-      { id: "PXNtSjxL0v0", label: "Ankle mobility for a deep squat" },
+      { id: "Lp5omZGsnJQ", label: "Deep squat with heels down (short)" },
+      { id: "0wzrgyAurT8", label: "How to deep squat hold" },
+      { id: "NwnMASsD3cs", label: "Can't squat with your heels down? Keep practicing" },
+    ],
+  },
+  {
+    group: "Home Program A (9 drills)",
+    slug: "90-90-hip-switch",
+    title: "90/90 Hip Switch",
+    cue: "Seated transition from 90/90 one side to the other — the SWITCH is the drill (different from the lift-off rotations above).",
+    candidates: [
+      { id: "CVVg8haOYlQ", label: "How to do a 90/90 hip switch (short)" },
+      { id: "m51AZSXMvEA", label: "90 90 hip switch — Active Life" },
+    ],
+  },
+  {
+    slug: "ankle-rocks",
+    title: "Ankle Rocks",
+    cue: "STANDING version: rock forward onto the balls of the feet, knees travel over toes, heels stay down. Many videos show half-kneeling — standing preferred.",
+    candidates: [
+      { id: "WBTzoSEG6vw", label: "Ankle dorsiflexion rocks (short)" },
+      { id: "QmqVoWqXe8w", label: "Ankle rocker" },
+    ],
+  },
+  {
+    slug: "thoracic-rotations",
+    title: "Thoracic Rotations",
+    cue: "Quadruped: hand behind head, rotate elbow down then up to the ceiling. Hips stay square.",
+    candidates: [
+      { id: "TTwMYrFwsQE", label: "Quadruped thoracic spine rotation (short)" },
+      { id: "z2zv526I7M8", label: "Quadruped thoracic spine rotation" },
+    ],
+  },
+  {
+    slug: "push-up",
+    title: "Push-Up",
+    cue: "Standard push-up, straight body line. Note: the generated clip on the other page is the SHOULDER-TAP variant — different drill.",
+    candidates: [
+      { id: "wD1M-f69Yy8", label: "The perfect push-up technique (short)" },
+      { id: "IODxDxX7oi4", label: "The perfect push up — do it right!" },
+    ],
+  },
+  {
+    slug: "bodyweight-squat",
+    title: "Bodyweight Squat",
+    cue: "An AI-generated clip for this drill is ALSO awaiting approval on the generated-clip review page — approve that one there if you prefer it.",
+    candidates: [
+      { id: "Qgpxx1Bxmgs", label: "Bodyweight squat tutorial (short)" },
+      { id: "dhhN_6B5nxE", label: "The perfect squat! (short)" },
+    ],
+  },
+  {
+    slug: "glute-bridge",
+    title: "Glute Bridge",
+    cue: "Supine, knees bent, drive hips up by squeezing the glutes — no lower-back arch at the top.",
+    candidates: [
+      { id: "R1OXPHRqehw", label: "How to do a glute bridge (short)" },
+      { id: "3nQeWv5Tx1A", label: "How to do glute bridge — exercise demo" },
+    ],
+  },
+  {
+    slug: "dead-bug",
+    title: "Dead Bug",
+    cue: "Opposite arm + leg lower together, lower back pressed into the floor the whole time.",
+    candidates: [
+      { id: "3eqodmkpkfA", label: "Proper dead bug form — core exercise demo" },
+      { id: "4XLEnwUr1d8", label: "Dead bug — abdominal / core exercise guide" },
+    ],
+  },
+  {
+    slug: "skipping",
+    title: "Skipping",
+    cue: "Rhythmic travelling skip driving the opposite knee up (A-skip style warm-up) — not jump rope.",
+    candidates: [
+      { id: "m9MccH7mWO0", label: "Skipping exercise demonstration" },
+      { id: "RnqRhSZ8MtE", label: "How to A-skip — demo and guide" },
+    ],
+  },
+  {
+    slug: "single-leg-hops-in-place",
+    title: "Single Leg Hops in Place",
+    cue: "In place (not travelling): small reactive hops on one foot, soft landings, knee over toes.",
+    candidates: [
+      { id: "7xuL1e_DkgU", label: "Single leg hops in-place" },
+      { id: "7WgzHOQGgYw", label: "Single leg hops — exercise tutorial" },
     ],
   },
 ];
@@ -89,6 +175,7 @@ function render(reviews) {
     const badge = rev ? (rev.status === "approved" ? "approved" : "rework") : "";
     const badgeText = rev ? (rev.status === "approved" ? "Pick saved" : "No fit — " + (rev.comment.includes("film") ? "filming" : "generate")) : "Pending";
     return `
+    ${d.group ? `<h2 class="group">${esc(d.group)}</h2>` : ""}
     <figure class="card" data-slug="${d.slug}" data-choice="">
       <div class="row"><span class="title">${esc(d.title)}</span>
         <span class="badge ${badge}">${esc(badgeText)}</span></div>

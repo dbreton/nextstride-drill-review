@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NextStride — Login page options</title>
+<style>
+  :root{
+    --bg:#04070c; --ink:#eaf6fb; --muted:#8ca8a0; --line:rgba(255,255,255,0.09);
+    --cyan:#65d6ef; --cyan-soft:rgba(101,214,239,0.12); --cyan-strong:#8eeaff;
+    --panel:linear-gradient(180deg,rgba(12,14,18,0.92),rgba(17,20,25,0.88));
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 500px at 50% -180px,rgba(101,214,239,0.10),transparent 60%),var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;-webkit-font-smoothing:antialiased;padding:30px 0 80px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  h1{font-size:30px;letter-spacing:-0.03em;margin:0}
+  .sub{color:var(--muted);font-size:15px;line-height:1.6;margin:10px 0 6px}
+  .vote{display:inline-block;margin-top:10px;border:1px solid rgba(101,214,239,0.35);background:var(--cyan-soft);color:var(--cyan-strong);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700}
+  section{margin-top:44px}
+  .opt-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .badge{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--cyan);color:#06222b;font-weight:900;font-size:16px}
+  h2{font-size:21px;letter-spacing:-0.02em;margin:0}
+  .why{color:var(--muted);font-size:14px;line-height:1.65;margin:8px 0 14px;max-width:760px}
+  .frame{border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,0.45)}
+  .bar{display:flex;gap:6px;align-items:center;background:#0b0f15;border-bottom:1px solid var(--line);padding:9px 12px}
+  .dot{width:9px;height:9px;border-radius:50%;background:#27303b}
+  .url{margin-left:10px;flex:1;background:#10161e;border-radius:7px;color:#5b6c77;font-size:11px;padding:4px 10px}
+  .screen{position:relative;aspect-ratio:16/9.6;font-size:11px;overflow:hidden}
+
+  /* shared mock atoms */
+  .mfield{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 9px;color:#5f7079;margin-top:6px}
+  .mbtn{background:linear-gradient(135deg,#8eeaff,#65d6ef 48%,#47b6d4);border-radius:9px;color:#06222b;font-weight:800;text-align:center;padding:8px;margin-top:9px}
+  .mtabs{display:flex;gap:4px;background:rgba(0,0,0,0.35);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:8px}
+  .mtab{flex:1;text-align:center;padding:5px;border-radius:7px;color:#9fb5ae}
+  .mtab.on{background:var(--cyan-soft);color:var(--cyan-strong);font-weight:700}
+  .mghost{border:1px solid rgba(142,234,255,0.35);border-radius:9px;color:var(--cyan-strong);text-align:center;padding:7px;margin-top:7px}
+  .mlabel{color:#8ca8a0;font-weight:800;letter-spacing:0.14em;font-size:8.5px;text-transform:uppercase}
+  img.shot{display:block;width:100%;border-radius:10px;border:1px solid var(--line)}
+
+  /* A — product-first split (current) */
+  .a-bg{position:absolute;inset:0;background:radial-gradient(circle at 16% 14%,rgba(101,214,239,0.16),transparent 26%),linear-gradient(135deg,#040c09,#071712 42%,#111b30)}
+  .a-grid{position:relative;display:grid;grid-template-columns:1.45fr 1fr;gap:14px;padding:18px}
+  .a-left{background:linear-gradient(145deg,rgba(8,14,22,0.85),rgba(5,10,17,0.96));border:1px solid var(--line);border-radius:16px;padding:14px}
+  .a-h{font-size:23px;font-weight:800;letter-spacing:-0.04em;line-height:1.02;margin:10px 0 6px}
+  .a-p{color:#a6bab3;font-size:10.5px;line-height:1.5;max-width:330px}
+  .a-card{background:rgba(10,11,13,0.5);border:1px solid var(--line);border-radius:12px;padding:9px;margin-top:11px}
+  .a-right{background:rgba(12,14,18,0.97);border:1px solid var(--line);border-radius:16px;padding:13px;align-self:center}
+
+  /* B — centered minimal */
+  .b-bg{position:absolute;inset:0;background:radial-gradient(700px 280px at 50% 0%,rgba(101,214,239,0.14),transparent 70%),#070b10}
+  .b-col{position:relative;display:flex;flex-direction:column;align-items:center;padding-top:22px}
+  .b-card{width:260px;background:rgba(12,14,18,0.97);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
+  .b-shot{width:430px;max-width:80%;margin-top:16px;transform:perspective(900px) rotateX(18deg);transform-origin:top;opacity:0.85}
+
+  /* C — immersive rink */
+  .c-bg{position:absolute;inset:0;background:linear-gradient(160deg,#02060b 0%,#06121c 55%,#0a1c2a 100%)}
+  .c-rink{position:absolute;inset:0;opacity:0.5}
+  .c-grid{position:relative;display:grid;grid-template-columns:1.4fr 1fr;gap:16px;padding:22px;height:100%;align-items:center}
+  .c-h{font-size:30px;font-weight:900;letter-spacing:-0.045em;line-height:1.0}
+  .c-h em{font-style:normal;color:var(--cyan-strong)}
+  .c-p{color:#9db4c4;font-size:11px;line-height:1.6;margin-top:8px;max-width:300px}
+  .c-card{background:rgba(8,14,20,0.72);backdrop-filter:blur(6px);border:1px solid rgba(142,234,255,0.18);border-radius:16px;padding:14px}
+
+  /* D — light SaaS */
+  .d-bg{position:absolute;inset:0;background:#f4f6f8}
+  .d-grid{position:relative;display:grid;grid-template-columns:1.45fr 1fr;gap:14px;padding:18px;color:#0f172a}
+  .d-h{font-size:23px;font-weight:800;letter-spacing:-0.04em;line-height:1.05;margin:8px 0 6px;color:#0f172a}
+  .d-p{color:#52525b;font-size:10.5px;line-height:1.5;max-width:330px}
+  .d-card{background:#fff;border:1px solid rgba(15,23,42,0.12);border-radius:16px;padding:13px;align-self:center;box-shadow:0 10px 30px rgba(15,23,42,0.08)}
+  .d-field{background:#fff;border:1px solid rgba(15,23,42,0.18);border-radius:8px;padding:7px 9px;color:#94a3b8;margin-top:6px}
+  .d-btn{background:#0284c7;border-radius:9px;color:#fff;font-weight:800;text-align:center;padding:8px;margin-top:9px}
+  .d-tabs{display:flex;gap:4px;background:#eef1f4;border-radius:10px;padding:3px;margin-bottom:8px}
+  .d-tab{flex:1;text-align:center;padding:5px;border-radius:7px;color:#52525b}
+  .d-tab.on{background:#fff;color:#0284c7;font-weight:700;box-shadow:0 1px 3px rgba(15,23,42,0.12)}
+  .d-label{color:#62626b;font-weight:800;letter-spacing:0.14em;font-size:8.5px;text-transform:uppercase}
+  .d-badge{display:inline-block;border:1px solid rgba(2,132,199,0.3);background:rgba(2,132,199,0.08);color:#0369a1;border-radius:999px;padding:3px 8px;font-size:8.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase}
+
+  .pros{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .pro{border:1px solid var(--line);background:rgba(255,255,255,0.04);border-radius:999px;color:#b9cbc4;font-size:12px;padding:5px 12px}
+  footer{margin-top:50px;color:#5d7570;font-size:13px;line-height:1.7}
+  a{color:var(--cyan-strong)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Login page — four directions</h1>
+  <p class="sub">Same form, same brand — four different front doors. All mockups are illustrative (proportions approximate); the dashboard image is the real product. Phone behavior is the same in every option: sign-in card first, marketing below.</p>
+  <span class="vote">Vote by replying A, B, C or D</span>
+
+  <!-- A -->
+  <section>
+    <div class="opt-head"><span class="badge">A</span><h2>Product-first split <span style="color:#5d7570;font-size:13px;font-weight:600">· what's live today</span></h2></div>
+    <p class="why">Marketing left, sign-in right. The hero leads with a real dashboard screenshot that plays the 2-minute tour inline. Safe, informative, familiar SaaS pattern.</p>
+    <div class="frame"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">nextstride.ai</span></div>
+      <div class="screen"><div class="a-bg"></div>
+        <div class="a-grid">
+          <div class="a-left">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong style="color:var(--cyan-strong)">NextStride<span style="color:#5b7a8a">.ai</span></strong>
+              <span class="mlabel" style="border:1px solid rgba(101,214,239,0.25);border-radius:999px;padding:3px 8px;color:var(--cyan-strong)">Coaches · Athletes · Families</span>
+            </div>
+            <div class="a-h">Plan the work.<br/>Track the stride.</div>
+            <p class="a-p">A focused workspace for coaches to build drills, compose sessions, manage events, and understand athlete progress.</p>
+            <div class="a-card">
+              <div style="display:flex;justify-content:space-between"><span class="mlabel" style="color:#92e7f8">▶ Inside the coach workspace</span><span class="mlabel">2-min tour</span></div>
+              <img class="shot" src="dash.jpg" alt="Coach dashboard" style="margin-top:7px"/>
+            </div>
+          </div>
+          <div class="a-right">
+            <strong style="font-size:14px">Welcome back.</strong>
+            <div style="color:#9fb5ae;margin:3px 0 8px">Coach workspace, athlete app, or parent portal.</div>
+            <div class="mtabs"><span class="mtab on">Sign in</span><span class="mtab">Create account</span></div>
+            <div class="mlabel">Email</div><div class="mfield">you@example.com</div>
+            <div class="mlabel" style="margin-top:7px">Password</div><div class="mfield">••••••••</div>
+            <div class="mbtn">Sign in →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pros"><span class="pro">Shows the real product</span><span class="pro">Already shipped — zero extra work</span><span class="pro">Most information-dense</span></div>
+  </section>
+
+  <!-- B -->
+  <section>
+    <div class="opt-head"><span class="badge">B</span><h2>Centered &amp; minimal</h2></div>
+    <p class="why">Sign-in is the whole story: one card, one line of value prop, and the product fading in below. Fastest path for the 90% who are returning users; marketing moves below the fold entirely. Linear/Vercel energy.</p>
+    <div class="frame"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">nextstride.ai</span></div>
+      <div class="screen"><div class="b-bg"></div>
+        <div class="b-col">
+          <strong style="color:var(--cyan-strong);font-size:13px">NextStride<span style="color:#5b7a8a">.ai</span></strong>
+          <div style="color:#9fb5ae;font-size:10px;margin-top:3px">The coaching OS for hockey teams — coaches, athletes &amp; families</div>
+          <div class="b-card">
+            <div class="mtabs"><span class="mtab on">Sign in</span><span class="mtab">Create account</span></div>
+            <div class="mlabel">Email</div><div class="mfield">you@example.com</div>
+            <div class="mlabel" style="margin-top:7px">Password</div><div class="mfield">••••••••</div>
+            <div class="mbtn">Sign in →</div>
+            <div class="mghost">✉ Email me a sign-in link</div>
+          </div>
+          <img class="shot b-shot" src="dash.jpg" alt="Coach dashboard fading in below"/>
+        </div>
+      </div>
+    </div>
+    <div class="pros"><span class="pro">Fastest sign-in, least noise</span><span class="pro">Pairs naturally with magic-link option</span><span class="pro">Marketing still lives below the fold</span></div>
+  </section>
+
+  <!-- C -->
+  <section>
+    <div class="opt-head"><span class="badge">C</span><h2>Immersive rink</h2></div>
+    <p class="why">Lead with the sport, not the software. A quiet center-ice graphic behind a big emotional headline, glass sign-in card floating on the right. The most distinctive and brand-forward of the four.</p>
+    <div class="frame"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">nextstride.ai</span></div>
+      <div class="screen"><div class="c-bg"></div>
+        <svg class="c-rink" viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice">
+          <circle cx="320" cy="185" r="95" fill="none" stroke="rgba(101,214,239,0.22)" stroke-width="2"/>
+          <circle cx="320" cy="185" r="6" fill="rgba(101,214,239,0.35)"/>
+          <line x1="320" y1="0" x2="320" y2="360" stroke="rgba(214,69,69,0.28)" stroke-width="3"/>
+          <line x1="150" y1="0" x2="150" y2="360" stroke="rgba(101,214,239,0.20)" stroke-width="5"/>
+          <line x1="490" y1="0" x2="490" y2="360" stroke="rgba(101,214,239,0.20)" stroke-width="5"/>
+          <circle cx="80" cy="80" r="38" fill="none" stroke="rgba(101,214,239,0.12)" stroke-width="2"/>
+          <circle cx="560" cy="290" r="38" fill="none" stroke="rgba(101,214,239,0.12)" stroke-width="2"/>
+        </svg>
+        <div class="c-grid">
+          <div>
+            <strong style="color:var(--cyan-strong);font-size:12px">NextStride<span style="color:#5b7a8a">.ai</span></strong>
+            <div class="c-h" style="margin-top:12px">Built for<br/>the <em>season.</em></div>
+            <p class="c-p">Drills, practices, game-day readiness, and every athlete's progress — one workspace for the whole team, families included.</p>
+            <div style="margin-top:10px"><span class="mlabel" style="border:1px solid rgba(101,214,239,0.25);border-radius:999px;padding:3px 9px;color:var(--cyan-strong)">▶ Watch the 2-min tour</span></div>
+          </div>
+          <div class="c-card">
+            <strong style="font-size:14px">Welcome back.</strong>
+            <div style="color:#9db4c4;margin:3px 0 8px">Coach · Athlete · Parent</div>
+            <div class="mtabs"><span class="mtab on">Sign in</span><span class="mtab">Create account</span></div>
+            <div class="mlabel">Email</div><div class="mfield">you@example.com</div>
+            <div class="mlabel" style="margin-top:7px">Password</div><div class="mfield">••••••••</div>
+            <div class="mbtn">Sign in →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pros"><span class="pro">Most memorable / on-brand</span><span class="pro">Emotional, sells the season not the feature list</span><span class="pro">Needs the most design care</span></div>
+  </section>
+
+  <!-- D -->
+  <section>
+    <div class="opt-head"><span class="badge">D</span><h2>Light &amp; trustworthy</h2></div>
+    <p class="why">Same split layout as A, but light-first — white canvas, solid blue actions, dashboard in a browser frame. Reads "professional team software" and matches the new light theme; friendliest for parents landing from an invite.</p>
+    <div class="frame"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">nextstride.ai</span></div>
+      <div class="screen"><div class="d-bg"></div>
+        <div class="d-grid">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong style="color:#0f172a">NextStride<span style="color:#0284c7">.ai</span></strong>
+              <span class="d-badge">Coaches · Athletes · Families</span>
+            </div>
+            <div class="d-h">Plan the work.<br/>Track the stride.</div>
+            <p class="d-p">A focused workspace for coaches to build drills, compose sessions, manage events, and understand athlete progress.</p>
+            <div style="background:#fff;border:1px solid rgba(15,23,42,0.12);border-radius:12px;padding:9px;margin-top:11px;box-shadow:0 8px 24px rgba(15,23,42,0.08)">
+              <div style="display:flex;justify-content:space-between"><span class="d-label" style="color:#0369a1">▶ Inside the coach workspace</span><span class="d-label">2-min tour</span></div>
+              <img class="shot" src="dash.jpg" alt="Coach dashboard" style="margin-top:7px;border-color:rgba(15,23,42,0.12)"/>
+            </div>
+          </div>
+          <div class="d-card">
+            <strong style="font-size:14px;color:#0f172a">Welcome back.</strong>
+            <div style="color:#52525b;margin:3px 0 8px">Coach workspace, athlete app, or parent portal.</div>
+            <div class="d-tabs"><span class="d-tab on">Sign in</span><span class="d-tab">Create account</span></div>
+            <div class="d-label">Email</div><div class="d-field">you@example.com</div>
+            <div class="d-label" style="margin-top:7px">Password</div><div class="d-field">••••••••</div>
+            <div class="d-btn">Sign in →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pros"><span class="pro">Friendliest for parents/families</span><span class="pro">Matches the refreshed light theme</span><span class="pro">Highest contrast with competitors' dark pages</span></div>
+  </section>
+
+  <footer>
+    Notes: every option keeps the same form logic (tabs, validation, forgot-password) and the phone behavior shipped this week (sign-in first). Option B shows the proposed “Email me a sign-in link” button — that feature can be added to any option. Theme toggle remains in all of them.<br/><br/>
+    NextStride · internal design review · June 2026
+  </footer>
+</div>
+</body>
+</html>
